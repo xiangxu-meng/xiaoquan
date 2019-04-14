@@ -1,1 +1,153 @@
-11111
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<style>
+    body{
+      background-image: url('./lab/images/bg.jpg');
+      background-size: cover;
+      height: 100%;
+      width: 100%;
+    }
+    .title{
+      color: white;
+      width: 100%;
+      text-align: center;
+      margin: 40px 0;
+      margin-bottom: 80px;
+      font-size: 60px
+    }
+    .login_table{
+      height: 50%;
+      width:35%; 
+      margin: 0 auto;
+    }
+    .login_title{
+      font-size: 30px;
+      color: white;
+      margin-right: 40px;
+      width: 150px;
+      height: 30;
+      box-sizing: border-box;
+      text-align: left;
+      vertical-align: baseline;
+      display: inline-block;
+    }
+    .login_input{
+      height: 30px;
+      display: inline-block;
+      vertical-align: baseline;
+      border: none;
+      border-radius: 4px;
+      width: 200px;
+      border-bottom: solid 2px #ffff00;
+      background: transparent;
+      color: white;
+      font-size: 24px;
+      padding: 4px;
+      outline: none;
+      cursor: pointer;
+    }
+    .item{
+      margin-top:40px;
+    }
+    .logined{
+      margin-top:100px;
+      width:60%;
+      background: rgba(255, 255, 0, 0.7);
+      display:inline-block;
+      border-radius: 50px;
+      padding: 10px 20px;
+      text-align: center;
+      margin-left: 20%;
+      color: white;
+      cursor: pointer;
+    }
+    .logined:hover{
+      background: rgb(255, 255, 0);
+    }
+    .stu_regist{
+      cursor: pointer;
+      width: 65%;
+      margin-left:20%;
+      text-align: right;
+      margin-top: 10px;
+      color: white;
+    }
+  </style>
+<body>
+  <div id="login">
+     <h1 class="title">
+        校园运动组队平台
+     </h1>
+     <div class="login_table">
+        <div class="item">
+          <span class="login_title">用户类型:</span>
+          <select  v-model="selected" class="login_input">
+              <option v-for="item in roles" :value="item.index">{{item.role}}</option>
+          </select>
+        </div>
+        <div class="item">
+          <span class="login_title">账户名:</span>
+          <input class="login_input" type="text">
+        </div>
+        <div class="item">
+          <span class="login_title">密码：</span>
+          <input class="login_input" type="text">
+        </div>
+
+        <div class="logined">登录</div>
+        <div class="stu_regist">学生注册</div>
+     </div>
+    </div>
+</body>
+
+<script type="text/javascript">
+  var app = new Vue({
+      el:'#login',
+      data:{
+          selected:"请选择身份",
+          roles:[{index:"0",role:"请选择身份"},{index:"1",role:"学生"},{index:"2",role:"管理员"},{index:"3",role:"平台管理员"}]
+      },
+  });
+  $(".logined").click(function(){
+      login();
+  });
+  function login(){
+      if(app.$data.selected=="请选择身份"){
+          msg("请选择身份");
+          return  ;
+      }
+      var name = $("#name").val();
+      var password  = $("#password").val();
+      if(name==""||password==""){
+          msg("请输入用户名");
+          return ;
+      }
+      $.post("AllLogin.form",{
+          role:app.$data.selected,
+          name:name,
+          password: $.md5(password)
+      },function(data){
+          if(data.result) {
+              if (data.status == "0") {
+                  //跳到系统管理员页
+                  location.href = "admin/index.form";
+              } else if (data.status == "1") {
+                  //跳转到教师页
+                  location.href = "ptadmin/index.form";
+              } else if (data.status == "2") {
+                  //跳转到学生页
+                  location.href = "student/index.form";
+              } 
+          }else{
+              msg(data.msg);
+          }
+      })
+  }
+</script>
+</html>
